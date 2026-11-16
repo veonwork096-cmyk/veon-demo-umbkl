@@ -1,0 +1,38 @@
+---
+import Logo from "./Logo.astro";
+import FutureLink from "./FutureLink.astro";
+import { clinic } from "../data/clinic";
+const year = new Date().getFullYear();
+const patients = [
+  { href: "#zapys", label: "Як записатися" },
+  { href: "#pidrozdily", label: "Підрозділи" },
+  { href: "#oplata", label: "Оплата" },
+  { href: "#napriamy", label: "Напрями" },
+  { href: "#likari", label: "Лікарі" },
+  { href: "#kontakty", label: "Контакти" },
+];
+const publicInfo = ["Керівництво", "Публічні закупівлі", "Нормативно-правова база", "Запобігання корупції"];
+---
+<footer class="site-footer" data-rec="UX-R5,UX-R12">
+  <div class="container">
+    <div class="site-footer__grid">
+      <div>
+        <Logo />
+        <p class="site-footer__legal">{clinic.legalName}. Раніше — {clinic.formerName}.</p>
+      </div>
+      <nav aria-labelledby="ft-patients">
+        <h2 id="ft-patients">Пацієнтам</h2>
+        <ul>{patients.map((p) => <li><a href={p.href}>{p.label}</a></li>)}</ul>
+      </nav>
+      <div>
+        <h2>Публічна інформація</h2>
+        <ul>{publicInfo.map((p) => <li><FutureLink>{p}</FutureLink></li>)}</ul>
+      </div>
+    </div>
+    <div class="site-footer__bottom">
+      <span>© {year} {clinic.shortName}</span>
+      <FutureLink>Про лікарню</FutureLink>
+      <FutureLink>Політика конфіденційності</FutureLink>
+    </div>
+  </div>
+</footer>

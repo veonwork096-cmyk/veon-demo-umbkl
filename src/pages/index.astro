@@ -1,0 +1,366 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import Icon from "../components/Icon.astro";
+import FutureLink from "../components/FutureLink.astro";
+import RouteLink from "../components/RouteLink.astro";
+import { clinic, registry, reception, ct, units, directions, doctors, news, asset } from "../data/clinic";
+
+const title = "Ужгородська міська багатопрофільна клінічна лікарня — УМБКЛ";
+const description =
+  "Екстрена допомога цілодобово, планове лікування, дитяча лікарня й перинатальний центр в Ужгороді. Запис: (0312) 66-20-96, пн–пт 13–16, або Health24.";
+const site = (import.meta.env.PUBLIC_SITE_URL as string | undefined) ?? "https://veonwork096-cmyk.github.io";
+const canonical = new URL(import.meta.env.BASE_URL, site).href;
+
+const [lead, ...rest] = units;
+// «Ще: …» — whose numbers are folded (labels from client.json, the part before a comma).
+const moreLabel = (list: { label: string }[]): string => {
+  const names = [...new Set(list.map((t) => t.label.split(",")[0]!.trim()))];
+  return `Ще ${list.length === 1 ? "телефон" : "телефони"}: ${names.map((n, i) => (i ? n.toLowerCase() : n)).join(", ")}`;
+};
+
+const board = [
+  { href: "#nevidkladni", sit: "Терміново", hot: "цілодобово", where: "діти й дорослі, Лікарня невідкладних станів, вул. Коршинського, 20", short: "Коршинського, 20" },
+  { href: "#zapys", sit: "Записатися до лікаря", where: `реєстратура ${registry.hours} або Health24`, short: "пн–пт 13–16 або Health24" },
+  { href: "#dytiacha", sit: "Дитина захворіла", where: "Дитяча лікарня, вул. Бращайків, 6", short: "Дитяча лікарня, Бращайків, 6" },
+  { href: "#perynatalnyi", sit: "Вагітність і пологи", where: "Перинатальний центр, вул. Коршинського, 20Б", short: "Перинатальний центр, Коршинського, 20Б" },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Hospital",
+  name: clinic.name,
+  alternateName: [clinic.shortName, clinic.formerName],
+  legalName: clinic.legalName,
+  email: clinic.email,
+  telephone: registry.main.tel,
+  address: { "@type": "PostalAddress", streetAddress: "вул. Минайська, 71", addressLocality: "Ужгород", addressCountry: "UA" },
+  sameAs: [clinic.facebook, clinic.instagram],
+  department: units
+    .filter((u) => u.places.length)
+    .map((u) => ({
+      "@type": "Hospital",
+      name: u.name,
+      address: { "@type": "PostalAddress", streetAddress: u.places[0]!.address, addressLocality: "Ужгород", addressCountry: "UA" },
+      ...(u.phones[0] ? { telephone: u.phones[0].tel } : {}),
+      ...(u.hours === "цілодобово" ? { openingHours: "Mo-Su 00:00-23:59" } : {}),
+    })),
+};
+---
+<Base lang="uk" title={title} description={description} canonical={canonical}>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} data-rec="SEO-R005" />
+  </Fragment>
+  <Header slot="header" />
+
+  <!-- 1. Hero: H1 + registry + board «Куди вам?» -->
+  <Section id="hero" rec="UX-R1,G-R002,M-R001" class="hero">
+    <div class="container">
+      <div class="hero__top">
+        <div class="hero__text">
+          <h1 class="hero__title settle" style="--i:0" data-rec="SEO-R001,UX-R12">{clinic.name}</h1>
+          <p class="hero__lead settle" style="--i:1">Чотири лікарні й експертна команда в Ужгороді. Екстрена допомога — цілодобово, для дітей і дорослих.</p>
+        </div>
+        <div class="reg settle" style="--i:2" data-rec="UX-R1">
+          <div class="reg__nums">
+            <a class="reg__num phone" href={`tel:${registry.main.tel}`}>{registry.main.display}</a>
+            <a class="reg__alt phone" href={`tel:${registry.mobile.tel}`}>{registry.mobile.display}</a>
+          </div>
+          <a class="btn btn--primary" href={`tel:${registry.main.tel}`} data-rec="UX-R10">
+            <Icon name="phone" />
+            <span class="btn__stack">Подзвонити в реєстратуру <small class="phone">{registry.main.display}</small></span>
+          </a>
+          <a class="reg__quiet go" href="#zapys">або онлайн через Health24 <Icon name="arrow" size={18} /></a>
+          <p class="reg__status"><span class="reg__label">Реєстратура планового лікування</span><span data-reg-status aria-live="polite">Дзвінки приймає у робочі дні, {registry.hours}</span></p>
+        </div>
+      </div>
+
+      <nav class="board on-field settle" style="--i:3" aria-labelledby="board-title" data-rec="UX-R1,UX-R3">
+        <h2 class="board__title" id="board-title">Куди вам?</h2>
+        <ul class="board__list">
+          {board.map((b) => (
+            <li>
+              <a class="board__row" href={b.href} data-here>
+                <span class="board__sit">{b.sit}</span>
+                <span class="board__where board__where--long">{b.hot && <b>{b.hot}, </b>}{b.where}</span>
+                <span class="board__where board__where--short">{b.hot && <b>{b.hot}, </b>}{b.short}</span>
+                <Icon name="arrow" class="board__arrow" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  </Section>
+
+  <!-- 2. Як записатися -->
+  <Section id="zapys" rec="UX-R2,M-R002,S-R010" class="section">
+    <div class="container plate">
+      <div class="section__head">
+        <h2 class="section__title" tabindex="-1" data-here-focus>Як записатися</h2>
+        <p class="section__lead">Телефоном у реєстратуру пн–пт з 13:00 до 16:00, онлайн через сервіс Health24, на комп'ютерну томографію — через Viber.</p>
+      </div>
+      <div class="ways">
+        <div class="way">
+          <h3 class="way__title">Телефоном у реєстратуру</h3>
+          <a class="way__big phone" href={`tel:${registry.main.tel}`}>{registry.main.display}</a>
+          <a class="phone" href={`tel:${registry.mobile.tel}`}>{registry.mobile.display}</a>
+          <p class="way__fact"><b>Лише {registry.hours}</b>, Клінічна лікарня планового лікування.</p>
+        </div>
+        <div class="way">
+          <h3 class="way__title">Онлайн через Health24</h3>
+          <a class="way__big" href={clinic.health24} target="_blank" rel="noopener">h24.ua<span class="visually-hidden"> (відкриється в новій вкладці)</span></a>
+          <p class="way__fact">Сторонній сервіс онлайн-запису. У пошуку вкажіть: <b>{clinic.name}</b>.</p>
+          <div class="way__more"><FutureLink>Детальна інструкція</FutureLink></div>
+        </div>
+        <div class="way">
+          <h3 class="way__title">Комп'ютерна томографія</h3>
+          <a class="way__big phone" href={ct.viberHref}><span class="visually-hidden">Написати у Viber </span>{ct.viberDisplay}</a>
+          <a class="phone" href={`tel:${ct.phone.tel}`}>Телефон {ct.phone.display}</a>
+          <p class="way__fact">Перший номер — <b>лише Viber</b>, для запису. <b>За направленням — безоплатно</b> за Програмою медичних гарантій.</p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- 3. Підрозділи -->
+  <Section id="pidrozdily" rec="UX-R3" class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">Чотири лікарні й експертна команда</h2>
+        <p class="section__lead">Лікарня невідкладних станів на вул. Коршинського, 20 приймає дітей і дорослих цілодобово.</p>
+      </div>
+
+      <article class="plate plate--lead on-field" id={lead!.id} aria-labelledby={`${lead!.id}-name`}>
+        <div class="plate__head">
+          <h3 class="plate__name" id={`${lead!.id}-name`} tabindex="-1">{lead!.short}</h3>
+          <p class="plate__for">{lead!.forWhom}</p>
+          <p class="plate__hours">{lead!.hours}</p>
+        </div>
+        <div class="plate__places">
+          {lead!.places.map((p) => (
+            <p><span class="place__addr">{p.address}</span><RouteLink query={p.map} /></p>
+          ))}
+          <FutureLink class="plate__page">Сторінка лікарні</FutureLink>
+        </div>
+        <dl class="plate__phones">
+          {lead!.phones.map((t) => (
+            <div><dt class="tel__label">{t.label}</dt><dd><a class="tel__num phone" href={`tel:${t.tel}`}>{t.display}</a></dd></div>
+          ))}
+        </dl>
+      </article>
+
+      <div class="plates">
+        {rest.map((u) => (
+          <article class="plate" id={u.id} aria-labelledby={`${u.id}-name`} data-reveal>
+            <div class="plate__head">
+              <h3 class="plate__name" id={`${u.id}-name`} tabindex="-1">{u.short}</h3>
+              <p class="plate__for">{u.forWhom}</p>
+            </div>
+            {u.places.length > 0 && (
+              <div class="plate__places">
+                {u.places.map((p) => (
+                  <p>
+                    {p.label && <span class="place__label">{p.label}</span>}
+                    <span class="place__addr">{p.address}</span>
+                    <RouteLink query={p.map} />
+                  </p>
+                ))}
+              </div>
+            )}
+            <div class="plate__places">
+              <dl class="plate__phones">
+                {u.phones.slice(0, 2).map((t) => (
+                  <div><dt class="tel__label">{t.label}</dt><dd><a class="tel__num phone" href={`tel:${t.tel}`}>{t.display}</a></dd></div>
+                ))}
+              </dl>
+              <div class="plate__foot">
+              {u.phones.length > 2 && (
+                <details class="more-tels">
+                  <summary>{moreLabel(u.phones.slice(2))}</summary>
+                  <dl class="plate__phones">
+                    {u.phones.slice(2).map((t) => (
+                      <div><dt class="tel__label">{t.label}</dt><dd><a class="tel__num phone" href={`tel:${t.tel}`}>{t.display}</a></dd></div>
+                    ))}
+                  </dl>
+                </details>
+              )}
+              <FutureLink class="plate__page">Сторінка підрозділу</FutureLink>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </Section>
+
+  <!-- 4. Безоплатно чи платно -->
+  <Section id="oplata" rec="UX-R11,G-R003,M-R003,S-R010" class="section section--band band-well">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">Безоплатно чи платно</h2>
+      </div>
+      <div class="pay">
+        <div class="pay__half">
+          <h3 class="pay__title">За направленням — безоплатно</h3>
+          <p>Комп'ютерна томографія за направленням лікаря — <b>безоплатно</b> за Програмою медичних гарантій. Компоненти крові та їх переливання в межах програми — теж безоплатні для пацієнтів.</p>
+        </div>
+        <div class="pay__half">
+          <h3 class="pay__title">Платні послуги — за тарифами</h3>
+          <p>Платні послуги надаються за тарифами, затвердженими наказом. Остання зміна — <b>{clinic.tariffOrder}</b>.</p>
+          <div><FutureLink>Тарифи</FutureLink></div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- 5. Напрями -->
+  <Section id="napriamy" rec="UX-R6" class="section">
+    <div class="container">
+      <div class="section__head section__head--split">
+        <h2 class="section__title">Напрями</h2>
+        <p class="section__lead">Профілі допомоги в мережі лікарень. Сторінки напрямів із лікарями й відділеннями — у розробці.</p>
+      </div>
+      <ul class="dir is-collapsed" id="dir-list">
+        {directions.map((d, i) => (
+          <li data-reveal style={`--reveal-delay:${(i % 6) * 40}ms`}><FutureLink>{d}</FutureLink></li>
+        ))}
+      </ul>
+      <button class="btn btn--outline dir__toggle" type="button" aria-controls="dir-list" aria-expanded="false" data-dir-toggle>Показати всі напрями</button>
+      <div class="section__foot">
+        <a class="go" href="#zapys">Як записатися до лікаря <Icon name="arrow" size={20} /></a>
+      </div>
+    </div>
+  </Section>
+
+  <!-- 6. Лікарі -->
+  <Section id="likari" rec="UX-R7" class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">Лікарі</h2>
+        <p class="section__lead">До лікаря планового лікування записує реєстратура пн–пт з 13:00 до 16:00 або сервіс Health24.</p>
+      </div>
+      <ul class="docs" aria-label="Лікарі лікарні" tabindex="0">
+        {doctors.map((d) => (
+          <li class="doc">
+            <picture>
+              <source type="image/avif" srcset={`${asset(`img/${d.img}-480.avif`)} 480w, ${asset(`img/${d.img}-800.avif`)} 800w`} sizes="(min-width: 60rem) 400px, 78vw" />
+              <source type="image/webp" srcset={`${asset(`img/${d.img}-480.webp`)} 480w, ${asset(`img/${d.img}-800.webp`)} 800w`} sizes="(min-width: 60rem) 400px, 78vw" />
+              <img src={asset(`img/${d.img}-800.jpg`)} width="800" height="1000" loading="lazy" decoding="async" alt={`${d.name}, ${d.role.toLowerCase()}`} data-rec="SPD-R1,UX-R9" />
+            </picture>
+            <h3 class="doc__name">{d.name}</h3>
+            <p class="doc__role">{d.role}</p>
+          </li>
+        ))}
+      </ul>
+      <div class="section__foot">
+        <FutureLink>Усі лікарі</FutureLink>
+        <a class="go" href="#zapys">Як записатися <Icon name="arrow" size={20} /></a>
+      </div>
+    </div>
+  </Section>
+
+  <!-- 7. Проєкти -->
+  <Section id="proiekty" class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">Проєкти</h2>
+      </div>
+      <figure class="proj__img">
+        <picture>
+          <source type="image/avif" srcset={`${asset("img/traumahua-800.avif")} 800w, ${asset("img/traumahua-1366.avif")} 1366w`} sizes="(min-width: 85rem) 1280px, 100vw" />
+          <source type="image/webp" srcset={`${asset("img/traumahua-800.webp")} 800w, ${asset("img/traumahua-1366.webp")} 1366w`} sizes="(min-width: 85rem) 1280px, 100vw" />
+          <img src={asset("img/traumahua-1366.jpg")} width="1366" height="310" loading="lazy" decoding="async" alt="Хірургічна бригада лікарні під час операції" />
+        </picture>
+        <figcaption>Фото з матеріалів проєкту TRAUMAHUA.</figcaption>
+      </figure>
+      <div class="proj__list">
+        <div class="proj__item">
+          <h3>Партнерство без кордонів: TRAUMAHUA</h3>
+          <p>Проєкт програми Interreg NEXT Угорщина — Словаччина — Румунія — Україна, співфінансований Європейським Союзом: хірургічне обладнання для лікарні.</p>
+          <div><FutureLink>Про проєкт</FutureLink></div>
+        </div>
+        <div class="proj__item">
+          <h3>Безоплатне зубопротезування для військових і ветеранів</h3>
+          <p>Проєкт лікарні для військовослужбовців і ветеранів.</p>
+          <div><FutureLink>Умови участі</FutureLink></div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- 8. Новини -->
+  <Section id="novyny" rec="UX-R8" class="section">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">Новини</h2>
+      </div>
+      <ul class="news">
+        {news.map((n) => (
+          <li>
+            <time datetime={n.iso}>{n.date}</time>
+            <h3><FutureLink>{n.title}</FutureLink></h3>
+          </li>
+        ))}
+      </ul>
+      <div class="section__foot"><FutureLink>Усі новини</FutureLink></div>
+    </div>
+  </Section>
+
+  <!-- 9. Контакти -->
+  <Section id="kontakty" rec="UX-R3,UX-R1,S-R009" class="section section--band on-field">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">Контакти</h2>
+        <p class="section__lead">Довідник по всіх адресах. Дзвоніть туди, куди йдете.</p>
+        <a class="go contacts__all" href="#pidrozdily">Усі адреси й телефони <Icon name="arrow" size={20} /></a>
+      </div>
+      <div class="contacts">
+        <ul class="dirtable">
+          {units.map((u) => (
+            <li>
+              <div>
+                <h3>{u.short}</h3>
+                {u.hours && <p class="plate__hours">{u.hours}</p>}
+              </div>
+              <div>
+                {u.places[0] ? (
+                  <p class="addr"><span class="addr__text">{u.places[0].address}</span><RouteLink query={u.places[0].map} /></p>
+                ) : <p class="addr"><span class="addr__text">Довідки — за телефонами</span></p>}
+              </div>
+              <div class="tels">
+                {u.phones.slice(0, 2).map((t) => (
+                  <p><span class="tel__label">{t.label}</span><a class="tel__num phone" href={`tel:${t.tel}`}>{t.display}</a></p>
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div class="close">
+          <p class="muted">Реєстратура планового лікування: 13:00–16:00, пн–пт</p>
+          <a class="close__num phone" href={`tel:${registry.main.tel}`}>{registry.main.display}</a>
+          <a class="btn btn--primary" href={`tel:${registry.main.tel}`} data-rec="UX-R10"><Icon name="phone" />Подзвонити в реєстратуру</a>
+          <div class="channels">
+            <a href={`tel:${reception.tel}`}><Icon name="phone" size={20} /><span>{reception.label} <span class="phone">{reception.display}</span></span></a>
+            <a href={`mailto:${clinic.email}`}><Icon name="mail" size={20} /><span>{clinic.email}</span></a>
+            <a href={ct.viberHref}><Icon name="chat" size={20} /><span>Viber для запису на КТ <span class="phone">{ct.viberDisplay}</span></span></a>
+            <a href={clinic.facebook} target="_blank" rel="noopener"><span>Facebook<span class="visually-hidden"> (відкриється в новій вкладці)</span></span></a>
+            <a href={clinic.instagram} target="_blank" rel="noopener"><span>Instagram<span class="visually-hidden"> (відкриється в новій вкладці)</span></span></a>
+          </div>
+          <p class="motto">«{clinic.motto[0]!.toUpperCase() + clinic.motto.slice(1)}»</p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+
+  <div class="callbar" data-callbar aria-hidden="true">
+    <a class="btn btn--primary" href={`tel:${registry.main.tel}`} tabindex="-1" data-rec="UX-R10"><Icon name="phone" size={20} />Подзвонити<span class="visually-hidden"> в реєстратуру</span></a>
+    <a class="btn btn--outline" href="#pidrozdily" tabindex="-1">Куди їхати</a>
+  </div>
+
+  <script src="../scripts/page.ts"></script>
+</Base>

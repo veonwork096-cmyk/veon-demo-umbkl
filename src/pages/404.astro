@@ -1,0 +1,21 @@
+---
+import Base from "../layouts/Base.astro";
+import { registry, asset } from "../data/clinic";
+---
+<Base lang="uk" title="Сторінку не знайдено — УМБКЛ" description="Такої сторінки немає. Поверніться на головну Ужгородської міської багатопрофільної клінічної лікарні.">
+  <section class="section nf">
+    <div class="container">
+      <h1 class="section__title">Такої сторінки немає</h1>
+      <p class="section__lead">Можливо, адреса змінилася. Усе головне — на першій сторінці.</p>
+      <p class="nf__actions">
+        <a class="btn btn--outline" href={asset("")}>На головну</a>
+        <a class="btn btn--primary" href={`tel:${registry.main.tel}`}>Реєстратура {registry.main.display}</a>
+      </p>
+    </div>
+  </section>
+</Base>
+<style>
+  .nf { padding-bottom: var(--space-7); }
+  .nf .section__lead { margin-top: var(--space-3); }
+  .nf__actions { margin-top: var(--space-5); display: flex; flex-wrap: wrap; gap: var(--space-3); }
+</style>

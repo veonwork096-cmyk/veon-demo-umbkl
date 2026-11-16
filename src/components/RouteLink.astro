@@ -1,0 +1,11 @@
+---
+// Map link for a real address (opens Google Maps search by the client's address line).
+import Icon from "./Icon.astro";
+import { mapUrl } from "../data/clinic";
+interface Props { query: string; label?: string; class?: string; }
+const { query, label = "Маршрут", class: cls } = Astro.props;
+---
+<a class:list={["route", cls]} href={mapUrl(query)} target="_blank" rel="noopener" data-rec="UX-R3">
+  <Icon name="route" size={20} />
+  <span>{label}</span><span class="visually-hidden"> до адреси {query} (карта відкриється в новій вкладці)</span>
+</a>

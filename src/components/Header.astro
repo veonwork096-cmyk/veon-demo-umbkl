@@ -1,0 +1,72 @@
+---
+import Logo from "./Logo.astro";
+import Icon from "./Icon.astro";
+import FutureLink from "./FutureLink.astro";
+import { registry, ct } from "../data/clinic";
+
+const nav = [
+  { href: "#zapys", label: "Як записатися" },
+  { href: "#pidrozdily", label: "Підрозділи" },
+  { href: "#napriamy", label: "Напрями" },
+  { href: "#likari", label: "Лікарі" },
+  { href: "#novyny", label: "Новини" },
+  { href: "#kontakty", label: "Контакти" },
+];
+const publicInfo = ["Керівництво", "Публічні закупівлі", "Нормативно-правова база", "Запобігання корупції"];
+---
+<header class="site-header" data-rec="UX-R5">
+  <div class="container site-header__inner">
+    <Logo />
+    <nav class="site-nav" aria-label="Основне меню">
+      <ul>
+        {nav.map((n) => <li><a href={n.href} data-nav>{n.label}</a></li>)}
+      </ul>
+    </nav>
+    <div class="site-header__right">
+      <a class="hdr-urgent" href="#nevidkladni" data-rec="UX-R3">Терміново <b>24/7</b></a>
+      <a class="hdr-reg" href={`tel:${registry.main.tel}`} data-rec="UX-R1">
+        <span class="hdr-reg__num phone">{registry.main.display}</span>
+        <span class="hdr-reg__meta">Реєстратура, {registry.hoursShort}</span>
+      </a>
+      <a class="icon-btn btn--primary hdr-call" href={`tel:${registry.main.tel}`} aria-label={`Подзвонити в реєстратуру ${registry.main.display}`} data-rec="UX-R10">
+        <Icon name="phone" />
+      </a>
+      <button class="icon-btn menu-btn" type="button" aria-haspopup="dialog" aria-controls="menu" aria-expanded="false" aria-label="Меню сайту" data-menu-open>
+        <Icon name="menu" size={20} /><span>Меню</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog class="menu" id="menu" aria-label="Меню сайту">
+  <div class="container">
+    <div class="menu__bar">
+      <Logo />
+      <button class="icon-btn" type="button" data-menu-close><Icon name="close" size={20} /><span>Закрити</span></button>
+    </div>
+    <div class="menu__body">
+      <nav class="menu__nav" aria-label="Меню для пацієнта">
+        <ul>
+          {nav.map((n) => <li><a href={n.href} data-menu-link>{n.label}</a></li>)}
+        </ul>
+      </nav>
+      <div class="menu__calls">
+        <h2>Подзвонити</h2>
+        <a class="btn btn--primary" href={`tel:${registry.main.tel}`}>
+          <Icon name="phone" />
+          <span class="btn__stack">Реєстратура <small class="phone">{registry.main.display}, {registry.hoursShort}</small></span>
+        </a>
+        <a class="btn btn--outline" href={ct.viberHref}>
+          <Icon name="chat" />
+          <span class="btn__stack">Viber для запису на КТ <small class="phone">{ct.viberDisplay}</small></span>
+        </a>
+      </div>
+      <div class="menu__public">
+        <h2>Публічна інформація</h2>
+        <ul>
+          {publicInfo.map((p) => <li><FutureLink>{p}</FutureLink></li>)}
+        </ul>
+      </div>
+    </div>
+  </div>
+</dialog>

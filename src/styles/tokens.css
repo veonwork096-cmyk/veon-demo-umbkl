@@ -1,0 +1,102 @@
+/* Hallmark · shape: wayfinding board · genre: modern-minimal · theme: custom · job: book+visit · idea: "Головна як вказівник у холі лікарні: куди йти, кому дзвонити і коли" · vibe: "ясний міський вказівник, спокій, точність, довіра"
+ * paper: #F5F7FA · accent: #FDC300 (field #164194) · display: Fixel Display · body: Fixel Text · hero: H1 зліва, справа реєстратура зі статусом, нижче синє табло «Куди вам?» з 4 рядків · nav: 6 якорів + реєстратура · footer: публічна інформація в колонках на paper · imagery: client photos (лікарі, TRAUMAHUA) · signature: синє табло з жовтими стрілками і мітка «вам сюди»
+ * axes: light/grotesk-sans/chromatic-blue · posture: committed · surface: absolute · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: imagery, лише 3 реальні портрети й одне фото проєкту; решту несе типографіка табло й табличок */
+/* Hallmark · waive 7b · --color-on-field: #FFFFFF · pure white is only the type colour on the logo-blue field, fixed by the approved client concept (veon-concept colors, contrast 9.47:1); the paper itself is tinted #F5F7FA */
+/* Hallmark · waive 38iii · .news h3 .future-link · the whole news headline is one inactive FutureLink for a page not built yet, never a single accented word inside the heading */
+/* Hallmark · waive 39b · a.btn 56px · the approved concept fixes the main button at 56px tall for older patients calling from a phone (concept 5.5 and design system: buttons radius 4, height 56) */
+/* Hallmark · waive 59 · section gaps 96px · the approved concept sets 96px between sections on desktop and 64px on phones to keep a long reference page shorter (concept 5.8) */
+/* Line 1 of this file is the Hallmark stamp (docs/process/hallmark.md); waivers go right below it. */
+
+/* Fixel (MacPaw, SIL OFL 1.1, https://github.com/MacPaw/Fixel) — self-hosted woff2, latin + cyrillic incl. ґ є і ї. */
+@font-face {
+  font-family: "Fixel Display";
+  src: url("../assets/fonts/FixelDisplay-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fixel Text";
+  src: url("../assets/fonts/FixelText-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fixel Text";
+  src: url("../assets/fonts/FixelText-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Client design tokens — only from design/concept.md (veon-concept: colors, fonts). */
+:root {
+  /* colour roles */
+  --color-bg: #F5F7FA;              /* paper */
+  --color-well: #E8EEF6;            /* second surface */
+  --color-field: #164194;           /* blue of the logo cross: board, plates, links */
+  --color-field-hover: #1C4CA6;     /* one step lighter for hover on the board */
+  --color-on-field: #FFFFFF;
+  --color-on-field-muted: #D6E0F0;
+  --color-accent: #FDC300;          /* yellow corners of the logo: signal only */
+  --color-accent-hover: #FFD033;
+  --color-on-accent: #0F1E33;
+  --color-accent-ink: var(--color-on-accent);
+  --color-text: #0F1E33;
+  --color-text-muted: #45556B;
+  --color-rule: #C5D0DE;            /* hairline, decorative */
+  --color-rule-on-field: rgb(214 224 240 / .28);
+  --color-focus: #164194;           /* focus ring on light; on the field it switches to the accent */
+
+  /* type */
+  --font-display: "Fixel Display", "Fixel Text", system-ui, sans-serif;
+  --font-body: "Fixel Text", system-ui, sans-serif;
+  --text-h1: clamp(2.125rem, 1.2rem + 3.6vw, 4.5rem);       /* 34 → 72 */
+  --text-h2: clamp(1.875rem, 1.45rem + 1.6vw, 2.75rem);     /* 30 → 44 */
+  --text-board: clamp(1.5rem, 1.3rem + .6vw, 1.875rem);     /* 24 → 30: numbers, board rows */
+  --text-h3: clamp(1.25rem, 1.2rem + .2vw, 1.375rem);       /* 20 → 22 */
+  --text-body: clamp(1.0625rem, 1.04rem + .1vw, 1.125rem);  /* 17 → 18 */
+  --text-meta: .9375rem;                                    /* 15 */
+  --lh-head: 1.08;
+  --lh-body: 1.55;
+  --track-head: -0.02em;
+
+  /* space: 4/8 scale */
+  --space-1: .5rem;   /* 8 */
+  --space-2: .75rem;  /* 12 */
+  --space-3: 1rem;    /* 16 */
+  --space-4: 1.5rem;  /* 24 */
+  --space-5: 2.5rem;  /* 40 */
+  --space-6: 4rem;    /* 64 */
+  --space-7: 6rem;    /* 96 */
+  --space-8: 9rem;    /* 144 */
+  --section-gap: var(--space-6);
+  --gutter: 1.25rem;  /* 20 on phones */
+  --space: var(--gutter);
+  --container: 1280px;
+
+  /* shape */
+  --radius: 6px;       /* fields and tiles */
+  --radius-btn: 4px;   /* buttons: a plate, not a bubble */
+  --header-h: 64px;
+  --tap: 48px;
+
+  /* motion */
+  --ease-out: cubic-bezier(.2, .7, .2, 1);
+  --ease-in: cubic-bezier(.5, 0, .75, 0);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+  --dur: var(--dur-long);
+}
+@media (min-width: 40rem) {
+  :root { --gutter: 2.5rem; }
+}
+@media (min-width: 60rem) {
+  :root { --header-h: 72px; --section-gap: var(--space-7); }
+}
+@media (min-width: 85rem) {
+  :root { --gutter: 4rem; }
+}
